@@ -20,7 +20,7 @@ const getJsUrls = async (site) => {
         interceptedRequest.continue();
     });
 
-    await page.goto('https://www.' + site, { waitUntil: 'networkidle0', timeout: 60000 });
+    await page.goto(site, { waitUntil: 'networkidle0', timeout: 60000 });
 
     //Get all script on page to check for async / defer
     const scriptsOnPage = await page.$$eval('script', el => el.map(o => o.getAttribute('src')))
