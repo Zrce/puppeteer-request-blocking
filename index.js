@@ -6,8 +6,8 @@ const { getTimeFromPerformanceMetrics, extractDataFromPerformanceMetrics, } = re
 const { calcLCP } = require("./lcp");
 const { calcJank } = require("./cls");
 
-const site = "http://schlaf-tracking.de"
-const filename = "schlaf-tracking.de"
+const site = "https://www.blick.ch"
+const filename = "blick.de"
 
 let lcpAllRequest = 0
 let clsAllRequest = 0
@@ -83,7 +83,7 @@ const runWithout = async (without) => {
         console.log('LCP --------------------> ' + lcp.toFixed(4) + ' ### ' + (lcp - lcpAllRequest).toFixed(4) + " ### " + ((Math.abs(lcp - lcpAllRequest) / lcpAllRequest) * 100).toFixed() + "%");
         console.log('CLS --------------------> ' + cls.toFixed(4) + ' ### ' + (cls - clsAllRequest).toFixed(4) + " ### " + ((Math.abs(cls - clsAllRequest) / clsAllRequest) * 100).toFixed() + "%");
         console.log('ScriptDuration ---------> ' + scriptDuration.toFixed(4) + ' ### ' + (scriptDuration - scriptDurationAllRequest).toFixed(4) + " ### " + ((Math.abs(scriptDuration - scriptDurationAllRequest) / scriptDurationAllRequest) * 100).toFixed() + "%");
-        await fs.appendFile(filename +'.csv', without.url + ', ' + without.async + ', ' + without.defer + ',' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
+        await fs.appendFile(filename +'.csv', without.url + ', ' + without.async + ', ' + without.defer + ', ' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
             if (err) throw err;
         });
         console.log("==============================================")
