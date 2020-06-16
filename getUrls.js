@@ -13,7 +13,7 @@ const getJsUrls = async (site) => {
     const jsUrls = []
     await page.setRequestInterception(true);
     page.on('request', interceptedRequest => {
-        if (interceptedRequest.url().includes(".js") && !interceptedRequest.url().includes('assets')) {  //assets is unique to internal scripts of blick
+        if (interceptedRequest.url().includes(".js") /* && !interceptedRequest.url().includes('wp-includes') */) {  //assets is unique to internal scripts of blick
             const url = interceptedRequest.url()
             jsUrls.push({ 'url': url })
         }

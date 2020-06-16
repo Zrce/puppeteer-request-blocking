@@ -1,4 +1,7 @@
 const puppeteer = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
+const iPhoneXR = devices.devicesMap['iPhone XR'];
+
 const fs = require("fs");
 
 const { getJsUrls } = require("./getUrls");
@@ -6,8 +9,8 @@ const { getTimeFromPerformanceMetrics, extractDataFromPerformanceMetrics, } = re
 const { calcLCP } = require("./lcp");
 const { calcJank } = require("./cls");
 
-const site = "https://www.blick.ch"
-const filename = "blick.de"
+const site = "http://www.guardian.co.uk"
+const filename = "guardian"
 
 let lcpAllRequest = 0
 let clsAllRequest = 0
@@ -32,7 +35,10 @@ const runWithout = async (without) => {
         timeout: 10000
     });
 
-    const page = await browser.newPage();
+    const page = await browser.newPage()
+    await page.emulate(iPhoneXR);
+
+    let lastPartURL = filename
 
     //Request Interception: Block the URL in "without"
     if (without !== false) {
@@ -44,6 +50,10 @@ const runWithout = async (without) => {
                 interceptedRequest.continue();
             }
         });
+
+        //Name of image
+        //console.log(without.url.match("([^\/]+[^\/]|[^\/]+[\/])$"))
+        lastPartURL = filename + "-" + without.url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0];
     }
 
     //Access Chrome DevTools Protocol
@@ -73,6 +83,8 @@ const runWithout = async (without) => {
     const metrics = await client.send('Performance.getMetrics');
     const scriptDuration = getTimeFromPerformanceMetrics(metrics, 'ScriptDuration')
 
+    await page.screenshot({path: 'images/' + filename + '/' + lastPartURL + '.png'});
+
     await browser.close();
 
     //Output
@@ -98,7 +110,7 @@ const runWithout = async (without) => {
         console.log('ScriptDuration ---------> ' + scriptDuration.toFixed(4));
         await fs.appendFile(filename +'.csv', 'ALL, -, -,' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
             if (err) throw err;
-        }); // => message.txt erased, contains only 'Hello Node'
+        }); 
         console.log("==============================================")
     }
 };
