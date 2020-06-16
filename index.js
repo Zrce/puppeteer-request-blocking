@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
-const iPhoneXR = devices.devicesMap['iPhone XR'];
+const iPhoneXR = devices.devicesMap['Nexus 5'];
 
 const fs = require("fs");
 
@@ -9,8 +9,8 @@ const { getTimeFromPerformanceMetrics, extractDataFromPerformanceMetrics, } = re
 const { calcLCP } = require("./lcp");
 const { calcJank } = require("./cls");
 
-const site = "http://www.guardian.co.uk"
-const filename = "guardian"
+const site = "https://www.blick.ch/news/ausland/streit-um-superspreader-anlaesse-ist-es-asozial-jetzt-protestieren-zu-gehen-id15940804.html"
+const filename = "blick-article"
 
 let lcpAllRequest = 0
 let clsAllRequest = 0
@@ -18,9 +18,9 @@ let scriptDurationAllRequest = 0
 
 const okConnection = {
     'offline': false,
-    'downloadThroughput': 4 * 1024 * 1024 / 8,
-    'uploadThroughput': 3 * 1024 * 1024 / 8,
-    'latency': 20
+    'downloadThroughput': 5 * 1024 * 1024 / 8,
+    'uploadThroughput': 4 * 1024 * 1024 / 8,
+    'latency': 40
 };
 
 //Run without a JS file 
@@ -28,17 +28,13 @@ const runWithout = async (without) => {
     const browser = await puppeteer.launch({
         headless: true,
         ignoreHTTPSErrors: true,
-        args:[
-            '--window-size=1280,768',
-            '--no-sandbox'
-        ],
         timeout: 10000
     });
 
     const page = await browser.newPage()
     await page.emulate(iPhoneXR);
 
-    let lastPartURL = filename
+    let lastPartURL = "all"
 
     //Request Interception: Block the URL in "without"
     if (without !== false) {
@@ -53,7 +49,7 @@ const runWithout = async (without) => {
 
         //Name of image
         //console.log(without.url.match("([^\/]+[^\/]|[^\/]+[\/])$"))
-        lastPartURL = filename + "-" + without.url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0];
+        lastPartURL = without.url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0];
     }
 
     //Access Chrome DevTools Protocol
@@ -83,7 +79,7 @@ const runWithout = async (without) => {
     const metrics = await client.send('Performance.getMetrics');
     const scriptDuration = getTimeFromPerformanceMetrics(metrics, 'ScriptDuration')
 
-    await page.screenshot({path: 'images/' + filename + '/' + lastPartURL + '.png'});
+    await page.screenshot({path: 'results/' + filename + '/' + lastPartURL + '.png'});
 
     await browser.close();
 
@@ -95,7 +91,7 @@ const runWithout = async (without) => {
         console.log('LCP --------------------> ' + lcp.toFixed(4) + ' ### ' + (lcp - lcpAllRequest).toFixed(4) + " ### " + ((Math.abs(lcp - lcpAllRequest) / lcpAllRequest) * 100).toFixed() + "%");
         console.log('CLS --------------------> ' + cls.toFixed(4) + ' ### ' + (cls - clsAllRequest).toFixed(4) + " ### " + ((Math.abs(cls - clsAllRequest) / clsAllRequest) * 100).toFixed() + "%");
         console.log('ScriptDuration ---------> ' + scriptDuration.toFixed(4) + ' ### ' + (scriptDuration - scriptDurationAllRequest).toFixed(4) + " ### " + ((Math.abs(scriptDuration - scriptDurationAllRequest) / scriptDurationAllRequest) * 100).toFixed() + "%");
-        await fs.appendFile(filename +'.csv', without.url + ', ' + without.async + ', ' + without.defer + ', ' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
+        await fs.appendFile('results/' + filename  + '/data.csv', without.url + ', ' + without.async + ', ' + without.defer + ', ' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
             if (err) throw err;
         });
         console.log("==============================================")
@@ -108,7 +104,7 @@ const runWithout = async (without) => {
         console.log('LCP --------------------> ' + lcp.toFixed(4));
         console.log('CLS --------------------> ' + cls.toFixed(4));
         console.log('ScriptDuration ---------> ' + scriptDuration.toFixed(4));
-        await fs.appendFile(filename +'.csv', 'ALL, -, -,' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
+        await fs.appendFile('results/' + filename  + '/data.csv', 'ALL, -, -,' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
             if (err) throw err;
         }); 
         console.log("==============================================")
