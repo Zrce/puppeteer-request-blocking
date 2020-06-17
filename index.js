@@ -10,7 +10,7 @@ const { calcLCP } = require("./lcp");
 const { calcJank } = require("./cls");
 
 const site = "https://www.blick.ch/news/ausland/streit-um-superspreader-anlaesse-ist-es-asozial-jetzt-protestieren-zu-gehen-id15940804.html"
-const filename = "blick-article"
+const filename = "blick-article-NEW"
 
 let lcpAllRequest = 0
 let clsAllRequest = 0
@@ -34,8 +34,6 @@ const runWithout = async (without) => {
     const page = await browser.newPage()
     await page.emulate(iPhoneXR);
 
-    let lastPartURL = "all"
-
     //Request Interception: Block the URL in "without"
     if (without !== false) {
         await page.setRequestInterception(true);
@@ -46,10 +44,6 @@ const runWithout = async (without) => {
                 interceptedRequest.continue();
             }
         });
-
-        //Name of image
-        //console.log(without.url.match("([^\/]+[^\/]|[^\/]+[\/])$"))
-        lastPartURL = without.url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0];
     }
 
     //Access Chrome DevTools Protocol
@@ -79,13 +73,13 @@ const runWithout = async (without) => {
     const metrics = await client.send('Performance.getMetrics');
     const scriptDuration = getTimeFromPerformanceMetrics(metrics, 'ScriptDuration')
 
-    await page.screenshot({path: 'results/' + filename + '/' + lastPartURL + '.png'});
+    await page.screenshot({path: 'results/' + filename + '/' + without.file + '.png'});
 
     await browser.close();
 
     //Output
     if (without !== false) {
-        console.log('WITHOUT ' + without.url)
+        console.log('WITHOUT ' + without.file)
         console.log('async ' + without.async)
         console.log('defer ' + without.defer)
         console.log('LCP --------------------> ' + lcp.toFixed(4) + ' ### ' + (lcp - lcpAllRequest).toFixed(4) + " ### " + ((Math.abs(lcp - lcpAllRequest) / lcpAllRequest) * 100).toFixed() + "%");
@@ -104,7 +98,7 @@ const runWithout = async (without) => {
         console.log('LCP --------------------> ' + lcp.toFixed(4));
         console.log('CLS --------------------> ' + cls.toFixed(4));
         console.log('ScriptDuration ---------> ' + scriptDuration.toFixed(4));
-        await fs.appendFile('results/' + filename  + '/data.csv', 'ALL, -, -,' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
+        await fs.appendFile('results/' + filename  + '/data.csv', 'nothing blocked, -, -,' + lcp.toFixed(4) + ', ' + cls.toFixed(4) + ', ' + scriptDuration.toFixed(4) + '\r\n', function (err) {
             if (err) throw err;
         }); 
         console.log("==============================================")
