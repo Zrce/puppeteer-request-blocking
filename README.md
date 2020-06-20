@@ -1,6 +1,6 @@
 # puppeteer-request-blocking
 
-Puppeteer script which blocks every Javascript using Puppeteer's setRequestInterception and run a performance / web vitals tests
+Puppeteer script which blocks every Javascript of a given URL using Puppeteer's setRequestInterception and then runs a performance / web vitals tests
 
 More about:
 https://medium.com/@WillmannTobias/use-puppeteer-to-block-single-javascripts-for-speed-tests-200cecfb8790
