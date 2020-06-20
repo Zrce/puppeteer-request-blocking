@@ -10,10 +10,11 @@ const getJsUrls = async (site) => {
 
     const page = await browser.newPage();
 
+    //Get js files from interceptedRequest
     const jsUrls = []
     await page.setRequestInterception(true);
     page.on('request', interceptedRequest => {
-        if (interceptedRequest.url().includes(".js") && !interceptedRequest.url().includes('assets')) {  //assets is unique to internal scripts of blick
+        if (interceptedRequest.url().includes(".js")) {
             let url = interceptedRequest.url()
             let file = url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0].split("?")[0];
             jsUrls.push({ 'url': url, 'file': file, 'async': '?', 'defer': '?' })
@@ -24,10 +25,11 @@ const getJsUrls = async (site) => {
     await page.goto(site, { waitUntil: 'networkidle0', timeout: 60000 });
     await page.waitFor(10000)
 
-    //Get all script on page to check for async / defer
+    //Get all script tags on page to check for async / defer
     const scriptsOnPage = await page.$$eval('script', el => el.map(o => o.getAttribute('src')))
 
     for (let [i, src] of scriptsOnPage.entries()) {
+        
         const async = await page.evaluate(el => el.async, (await page.$$('script'))[i])
         const defer = await page.evaluate(el => el.defer, (await page.$$('script'))[i])
         try {

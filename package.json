@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "fs": "0.0.1-security",
+    "mkdirp": "^1.0.4",
     "puppeteer": "^3.3.0"
   },
   "devDependencies": {},
