@@ -6,11 +6,11 @@ More about:
 https://medium.com/@WillmannTobias/use-puppeteer-to-block-single-javascripts-for-speed-tests-200cecfb8790
 
 # Install
-npm install to install 
+use "npm install" to install 
 ```
-"fs": "0.0.1-security",
-"mkdirp": "^1.0.4",
-"puppeteer": "^3.3.0"
+"fs": 
+"mkdirp": 
+"puppeteer":
 ```
 
 # How to run
