@@ -14,7 +14,7 @@ const getJsUrls = async (site) => {
     const jsUrls = []
     await page.setRequestInterception(true);
     page.on('request', interceptedRequest => {
-        if (interceptedRequest.url().includes(".js")) {
+        if (interceptedRequest.url().includes(".js") && !interceptedRequest.url().includes("assets")) {
             let url = interceptedRequest.url()
             let file = url.match("([^\/]+[^\/]|[^\/]+[\/])$")[0].split("?")[0];
             jsUrls.push({ 'url': url, 'file': file, 'async': '?', 'defer': '?' })

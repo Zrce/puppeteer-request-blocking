@@ -1,11 +1,11 @@
 //Config 
-const site = "https://www.blick.ch/community/bund-lockert-corona-massnahmen-laesst-du-die-korken-knallen-und-holst-jetzt-deine-hochzeitsfeier-nach-id15909552.html"
-const filename = "blick-article-NEW4"
-const runs = 10
+const site = "https://bigbeachspringbreak.com/"
+const filename = "bigbeachspringbreak"
+const runs = 1
 
 const puppeteer = require('puppeteer');
-const devices = require('puppeteer/DeviceDescriptors');
-const nexus5 = devices.devicesMap['Nexus 5'];
+const devices = puppeteer.devices;
+const nexus5 = devices['Nexus 5'];
 const fs = require("fs");
 const mkdirp = require('mkdirp');
 
